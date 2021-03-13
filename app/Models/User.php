@@ -25,7 +25,8 @@ class User extends Authenticatable
         'username',
         'img',
         'qr',
-        'code'
+        'code',
+        'phone',
     ];
 
     /**

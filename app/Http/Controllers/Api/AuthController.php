@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\UserResource;
 use App\Models\User;
 use App\Tools\ImageHelper;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class AuthController extends Controller
             $query->where('email', $request->username);
             $query->orWhere('username', $request->username);
         })->first();
-        return response()->json(['user' => $user, 'balance' => $user->balance,'access_token'=>$user->createToken('user_token')->plainTextToken], 200);
+        return response()->json(['user' => new UserResource($user), 'balance' => $user->balance,'access_token'=>$user->createToken('user_token')->plainTextToken], 200);
     }
 
     public function register(Request $request)
@@ -69,7 +70,7 @@ class AuthController extends Controller
             'code'=>$code
         ]);
 
-        return response()->json(['user' => $user, 'balance' => $user->balance], 200);
+        return response()->json(['user' => new UserResource($user), 'balance' => $user->balance], 200);
     }
 
 
@@ -99,11 +100,12 @@ class AuthController extends Controller
         $user->name = $request->name;
         $user->username = $request->username;
         $user->email = $request->email;
+        $user->phone = $request->phone;
         if (!empty($request->password)) {
             $user->password = bcrypt($request->password);
         }
         $user->save();
-        return response()->json(['user' => $user, 'balance' => $user->balance], 200);
+        return response()->json(['user' => new UserResource($user), 'balance' => $user->balance], 200);
 
     }
 
@@ -113,7 +115,7 @@ class AuthController extends Controller
         $user->update([
             'img' => $this->uploadImg($request->avatar, 64, 64, false, auth()->user()->img),
         ]);
-        return response()->json(['user' => $user, 'balance' => $user->balance], 200);
+        return response()->json(['user' => new UserResource($user), 'balance' => $user->balance], 200);
     }
 
 
@@ -122,7 +124,7 @@ class AuthController extends Controller
         if(is_null($user)){
          return response()->json([],404);
         }
-        return response()->json(['user' => $user], 200);
+        return response()->json(['user' => new UserResource($user)], 200);
     }
 
 
@@ -191,6 +193,6 @@ class AuthController extends Controller
         if(is_null($user)){
           return response()->json([],404);
         }
-         return response()->json(['user' => $user], 200);
+         return response()->json(['user' => new UserResource($user)], 200);
     }
 }
