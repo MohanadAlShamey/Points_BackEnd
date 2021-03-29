@@ -23,7 +23,10 @@ class UserResource extends JsonResource
             'qr'=>asset('storage/'.$this->qr),
             'balance'=>$this->balance,
             'total'=>$this->totalBalance,
-            'phone'=>$this->phone
+            'phone'=>$this->phone??'',
+            'idNo'=>$this->idNo,
+            'mony'=>$this->mony,
+            'totalMony'=>$this->totalMony,
         ];
     }
 }

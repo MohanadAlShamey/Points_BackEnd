@@ -3,22 +3,24 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\BalanceResource;
 use App\Http\Resources\Api\PointResource;
 use App\Http\Resources\Api\UserResource;
+use App\Models\Balance;
 use App\Models\Point;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class PointController extends Controller
+class BalanceController extends Controller
 {
     # @Stuff
-    public function addPoint(Request $request)
+    public function addBalance(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required',
-            'noId' => 'required|unique:points,noId',// orderId
+            'noId' => 'required|unique:balances,order_id',
             'amount' => 'required',
             'qnt' => 'required',
         ]);
@@ -32,12 +34,12 @@ class PointController extends Controller
 
         $user = User::where('code', $request->code)->first();
         try {
-            Point::create([
+            Balance::create([
                 'type' => 1,
                 'status' => 1,
                 'amount' => $request->amount,
                 'user_id' => $user->id,
-                'noId' => $request->noId,
+                'order_id' => $request->noId,
                 'qnt' => $request->qnt,
                 'note' => $request->note,
             ]);
@@ -49,7 +51,7 @@ class PointController extends Controller
 
     }
     # @Stuff
-    public function pullPoint(Request $request)
+    public function pullBalance(Request $request)
     {
 
         $user = User::where('code', $request->code)->first();
@@ -62,7 +64,7 @@ class PointController extends Controller
             return response()->json([], 404);
         }
 
-        Point::create([
+        Balance::create([
             'user_id' => $user->id,
             'qnt' => $request->qnt,
             'type' => -1,
@@ -72,18 +74,18 @@ class PointController extends Controller
         return response()->json([], 200);
     }
     # @Stuff
-    public function getAllPoints(Request $request){
+    public function getAllBalances(Request $request){
 
-        $points=Point::where('user_id',auth()->id())->where(function ($query){
+        $points=Balance::where('user_id',auth()->id())->where(function ($query){
             $query->where('created_at','like','%'.\request()->get('search').'%');
-            $query->orWhere('noID','like','%'.\request()->get('search').'%');
+            //$query->orWhere('order_id','like','%'.\request()->get('search').'%');
             $query->orWhereHas('user',function($query){
                 $query->where('name','like','%'.\request()->get('search').'%');
                 $query->orWhere('email','like','%'.\request()->get('search').'%');
             });
         })->latest()->get();
 
-        return response()->json(['points'=>PointResource::collection($points)],200);
+        return response()->json(['points'=>BalanceResource::collection($points)],200);
 
     }
 
@@ -96,10 +98,10 @@ class PointController extends Controller
     # @User
     public function transfer(Request $request)
     {
-       /* $validat = Validator::make($request->all(), [
-            'email' => 'required',
-            'qnt' => 'required',
-        ]);*/
+        /* $validat = Validator::make($request->all(), [
+             'email' => 'required',
+             'qnt' => 'required',
+         ]);*/
         $user = User::where('idNo', $request->idNo)->first();
         //return $user;
         if($user->id==auth()->id()){
@@ -112,14 +114,14 @@ class PointController extends Controller
 
         DB::beginTransaction();
         try {
-            $from = Point::create([
+            $from = Balance::create([
                 'qnt' => $request->qnt,
                 'user_id' => auth()->id(),
                 'status' => 1,
                 'type' => -1
             ]);
 
-            $to = Point::create([
+            $to = Balance::create([
                 'qnt' => $request->qnt,
                 'user_id' => $user->id,
 
@@ -144,10 +146,10 @@ class PointController extends Controller
     }
 
     # @USer
-    public function activePoint(Point $point)
+    public function activeBalance(Balance $balance)
     {
-        if (auth()->id() == $point->user_id) {
-            $point->update([
+        if (auth()->id() == $balance->user_id) {
+            $balance->update([
                 'status' => 1
             ]);
             return response()->json(['user' => new UserResource(auth()->user())], 200);
@@ -156,32 +158,31 @@ class PointController extends Controller
     }
 
     # @User
-    public function cancelPoint(Point $point){
-        if (auth()->id() != $point->user_id) {
+    public function cancelBalance(Balance $balance){
+        if (auth()->id() != $balance->user_id) {
             return response()->json([],422);
 
         }
-      DB::beginTransaction();
-      try{
-          $point->point()->delete();
-          $point->delete();
-          DB::commit();
-          return response()->json(['user' => new UserResource(auth()->user())], 200);
-      }catch(\Exception $e){
-          DB::rollBack();
-          return response()->json([],401);
-      }
+        DB::beginTransaction();
+        try{
+            $balance->balance()->delete();
+            $balance->delete();
+            DB::commit();
+            return response()->json(['user' => new UserResource(auth()->user())], 200);
+        }catch(\Exception $e){
+            DB::rollBack();
+            return response()->json([],401);
+        }
     }
 
     # @User
-    public function getMyPoints(Request $request){
+    public function getMyBalances(Request $request){
 
-        $points=Point::where('user_id',auth()->id())->when(!is_null($request->date),function ($query){
+        $points=Balance::where('user_id',auth()->id())->when(!is_null($request->date),function ($query){
             $query->where('created_at','like','%'.\request()->get('date').'%');
         })->latest()->get();
 
         return response()->json(['points'=>PointResource::collection($points)],200);
 
     }
-
 }

@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    protected $appends=['balance','totalBalance'];
+    protected $appends=['balance','totalBalance','mony','totalMony'];
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -27,6 +27,7 @@ class User extends Authenticatable
         'qr',
         'code',
         'phone',
+        'idNo',
     ];
 
     /**
@@ -66,6 +67,10 @@ class User extends Authenticatable
         return $this->hasMany(Point::class);
     }
 
+    public function balances(){
+        return $this->hasMany(Balance::class);
+    }
+
     public function getBalanceAttribute(){
         $add=$this->points()->where(['type'=>1,'status'=>1])->sum('qnt');
         $min=$this->points()->where(['type'=>-1])->sum('qnt');
@@ -75,6 +80,19 @@ class User extends Authenticatable
     public function getTotalBalanceAttribute(){
         $add=$this->points()->where(['type'=>1])->sum('qnt');
         $min=$this->points()->where(['type'=>-1])->sum('qnt');
+        return $add-$min;
+    }
+
+
+    public function getMonyAttribute(){
+        $add=$this->balances()->where(['type'=>1,'status'=>1])->sum('qnt');
+        $min=$this->balances()->where(['type'=>-1])->sum('qnt');
+        return $add-$min;
+    }
+
+    public function getTotalMonyAttribute(){
+        $add=$this->balances()->where(['type'=>1])->sum('qnt');
+        $min=$this->balances()->where(['type'=>-1])->sum('qnt');
         return $add-$min;
     }
 

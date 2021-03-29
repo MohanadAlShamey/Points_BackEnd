@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\UserResource;
 use App\Models\User;
 use App\Tools\ImageHelper;
+use App\Tools\UserHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,6 +16,7 @@ use SimpleSoftwareIO\QrCode\Generator;
 class AuthController extends Controller
 {
     use ImageHelper;
+    use UserHelper;
 
     public function login(Request $request)
     {
@@ -34,11 +36,12 @@ class AuthController extends Controller
             $query->where('email', $request->username);
             $query->orWhere('username', $request->username);
         })->first();
-        return response()->json(['user' => new UserResource($user), 'balance' => $user->balance,'access_token'=>$user->createToken('user_token')->plainTextToken], 200);
+        return response()->json(['user' => new UserResource($user), 'balance' => $user->balance, 'access_token' => $user->createToken('user_token')->plainTextToken], 200);
     }
 
     public function register(Request $request)
     {
+
         $validate = Validator::make($request->all(), [
             'name' => 'required',
             'username' => 'required|unique:users,username',
@@ -56,18 +59,19 @@ class AuthController extends Controller
 
             return response()->json([$validate->getMessageBag()], 422);
         }
-        $qrcode=new Generator();
-        $name='images/'.time().Str::random(3).'.svg';
-        $code=md5(time().Str::random(4));
-        $qrcode->generate($code,storage_path('app/public/'.$name));
+        $qrcode = new Generator();
+        $name = 'images/' . time() . Str::random(3) . '.svg';
+        $code = md5(time() . Str::random(4));
+        $qrcode->generate($code, storage_path('app/public/' . $name));
         //return $data;
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'password' => bcrypt($request->password),
             'email' => $request->email,
-            'qr'=>$name,
-            'code'=>$code
+            'qr' => $name,
+            'code' => $code,
+            'idNo' =>$this->generateCode(),
         ]);
 
         return response()->json(['user' => new UserResource($user), 'balance' => $user->balance], 200);
@@ -119,40 +123,43 @@ class AuthController extends Controller
     }
 
 
-    public function getUserByQr(Request $request){
-        $user=User::where('code',$request->code)->first();
-        if(is_null($user)){
-         return response()->json([],404);
+    public function getUserByQr(Request $request)
+    {
+        $user = User::where('code', $request->code)->first();
+        if (is_null($user)) {
+            return response()->json([], 404);
         }
         return response()->json(['user' => new UserResource($user)], 200);
     }
 
 
-    public function generateQrCode(){
-        $count=time();
-        $users=User::all();
+    public function generateQrCode()
+    {
+        $count = time();
+        $users = User::all();
 
         foreach ($users as $user) {
-            $qrcode=new Generator();
-            $old=storage_path('app/public/'.$user->qr);
-            $name='images/'.$count.Str::random(3).'.svg';
-            $code=md5($count.Str::random(4));
-            if(is_file($old)&& file_exists($old)){
+            $qrcode = new Generator();
+            $old = storage_path('app/public/' . $user->qr);
+            $name = 'images/' . $count . Str::random(3) . '.svg';
+            $code = md5($count . Str::random(4));
+            if (is_file($old) && file_exists($old)) {
                 unlink($old);
             }
-            $qrcode->generate($code,storage_path('app/public/'.$name));
+            $qrcode->generate($code, storage_path('app/public/' . $name));
 
             $user->update([
-                'qr'=>$name,
-                'code'=>$code,
+                'qr' => $name,
+                'code' => $code,
             ]);
 
         }
-        return response()->json([],200);
+        return response()->json([], 200);
     }
 
 
-    public function newUser(Request $request){
+    public function newUser(Request $request)
+    {
         $validate = Validator::make($request->all(), [
             'name' => 'required',
             'username' => 'required|unique:users,username',
@@ -170,29 +177,31 @@ class AuthController extends Controller
 
             return response()->json([$validate->getMessageBag()], 422);
         }
-        $qrcode=new Generator();
-        $name='images/'.time().Str::random(3).'.svg';
-        $code=md5(time().Str::random(4));
-        $qrcode->generate($code,storage_path('app/public/'.$name));
+        $qrcode = new Generator();
+        $name = 'images/' . time() . Str::random(3) . '.svg';
+        $code = md5(time() . Str::random(4));
+        $qrcode->generate($code, storage_path('app/public/' . $name));
         //return $data;
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'password' => bcrypt($request->password),
             'email' => $request->email,
-            'qr'=>$name,
-            'code'=>$code
+            'qr' => $name,
+            'code' => $code,
+            'idNo'=>$this->generateCode(),
         ]);
 
         return response()->json([], 200);
     }
 
-    public function getUserByEmail(Request $request){
-        $user=User::where('email',$request->email)->first();
+    public function getUserByIdNo(Request $request)
+    {
+        $user = User::where('idNo', $request->IdNo)->first();
 
-        if(is_null($user)){
-          return response()->json([],404);
+        if (is_null($user)) {
+            return response()->json([], 404);
         }
-         return response()->json(['user' => new UserResource($user)], 200);
+        return response()->json(['user' => new UserResource($user)], 200);
     }
 }
