@@ -14,7 +14,7 @@ class UserController extends Controller
             $q=\request('search');
             $query->where('name','like','%'.$q.'%');
             $query->orWhere('email','like','%'.$q.'%');
-            $query->orWhere('','like','%'.$q.'%');
+            //$query->orWhere('','like','%'.$q.'%');
         })->get();
         return response()->json(['users'=>UserResource::collection($users)],200);
     }

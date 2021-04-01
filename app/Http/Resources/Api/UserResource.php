@@ -27,6 +27,7 @@ class UserResource extends JsonResource
             'idNo'=>$this->idNo,
             'mony'=>$this->mony,
             'totalMony'=>$this->totalMony,
+            'role'=>$this->role,
         ];
     }
 }

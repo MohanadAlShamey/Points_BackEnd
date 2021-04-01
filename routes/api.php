@@ -37,9 +37,22 @@ Route::middleware(['auth:sanctum', 'stuff'])->group(function () {
 
     Route::post('addPoint', [\App\Http\Controllers\Api\PointController::class, 'addPoint']);
     Route::post('pullPoint', [\App\Http\Controllers\Api\PointController::class, 'pullPoint']);
-    Route::get('getAllPoints', [\App\Http\Controllers\Api\PointController::class, 'getAllPoints']);
+    Route::get('getAllPoints/{user}', [\App\Http\Controllers\Api\PointController::class, 'getAllPoints']);
 
     Route::post('addBalance', [\App\Http\Controllers\Api\BalanceController::class, 'addBalance']);
     Route::post('pullBalance', [\App\Http\Controllers\Api\BalanceController::class, 'pullBalance']);
     Route::get('getAllBalances', [\App\Http\Controllers\Api\BalanceController::class, 'getAllBalances']);
+    Route::get('users', [\App\Http\Controllers\Api\UserController::class, 'getAllUser']);
+
+
+    Route::get('unlockApp', [\App\Http\Controllers\Api\Admin\LockController::class, 'unlock']);
+
 });
+
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+Route::post('generateLock',[\App\Http\Controllers\Api\Admin\LockController::class,'generateCode']);
+Route::get('generateLockQr',[\App\Http\Controllers\Api\Admin\LockController::class,'getQrLock']);
+Route::post('updateRole/{user}',[\App\Http\Controllers\Api\Admin\UserController::class,'updateRole']);
+});
+
+

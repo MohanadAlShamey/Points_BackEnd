@@ -129,7 +129,7 @@ class AuthController extends Controller
         if (is_null($user)) {
             return response()->json([], 404);
         }
-        return response()->json(['user' => new UserResource($user)], 200);
+        return response()->json(['user' => new UserResource($user)],200);
     }
 
 

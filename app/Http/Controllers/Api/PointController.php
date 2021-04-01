@@ -48,10 +48,18 @@ class PointController extends Controller
 
 
     }
+
     # @Stuff
     public function pullPoint(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'code' => 'required',
+            'qnt' => 'required',
+        ]);
+        if ($validator->fails()) {
 
+            return response()->json([], 422);
+        }
         $user = User::where('code', $request->code)->first();
         if ($request->qnt > $user->balance) {
             return response()->json([], 401);
@@ -67,23 +75,24 @@ class PointController extends Controller
             'qnt' => $request->qnt,
             'type' => -1,
             'note' => $request->note,
-            'status'=>1,
+            'status' => 1,
         ]);
         return response()->json([], 200);
     }
-    # @Stuff
-    public function getAllPoints(Request $request){
 
-        $points=Point::where('user_id',auth()->id())->where(function ($query){
-            $query->where('created_at','like','%'.\request()->get('search').'%');
-            $query->orWhere('noID','like','%'.\request()->get('search').'%');
-            $query->orWhereHas('user',function($query){
-                $query->where('name','like','%'.\request()->get('search').'%');
-                $query->orWhere('email','like','%'.\request()->get('search').'%');
-            });
+    # @Stuff
+    public function getAllPoints(Request $request, User $user)
+    {
+
+        $points = Point::where('user_id', $user->id)->where(function ($query) {
+            if (!empty(\request()->get('search'))) {
+                $query->orWhere('noID', 'like', '%' . \request()->get('search') . '%');
+            }
+
+
         })->latest()->get();
 
-        return response()->json(['points'=>PointResource::collection($points)],200);
+        return response()->json(['points' => PointResource::collection($points)], 200);
 
     }
 
@@ -96,14 +105,14 @@ class PointController extends Controller
     # @User
     public function transfer(Request $request)
     {
-       /* $validat = Validator::make($request->all(), [
-            'email' => 'required',
-            'qnt' => 'required',
-        ]);*/
+        /* $validat = Validator::make($request->all(), [
+             'email' => 'required',
+             'qnt' => 'required',
+         ]);*/
         $user = User::where('idNo', $request->idNo)->first();
         //return $user;
-        if($user->id==auth()->id()){
-            return response()->json([],403);
+        if ($user->id == auth()->id()) {
+            return response()->json([], 403);
         }
 
         if (auth()->user()->balance < $request->qnt) {
@@ -134,7 +143,7 @@ class PointController extends Controller
 
             DB::commit();
 
-            return response()->json(['user'=>new UserResource(auth()->user())], 200);
+            return response()->json(['user' => new UserResource(auth()->user())], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([$e->getMessage()], 401);
@@ -156,31 +165,33 @@ class PointController extends Controller
     }
 
     # @User
-    public function cancelPoint(Point $point){
+    public function cancelPoint(Point $point)
+    {
         if (auth()->id() != $point->user_id) {
-            return response()->json([],422);
+            return response()->json([], 422);
 
         }
-      DB::beginTransaction();
-      try{
-          $point->point()->delete();
-          $point->delete();
-          DB::commit();
-          return response()->json(['user' => new UserResource(auth()->user())], 200);
-      }catch(\Exception $e){
-          DB::rollBack();
-          return response()->json([],401);
-      }
+        DB::beginTransaction();
+        try {
+            $point->point()->delete();
+            $point->delete();
+            DB::commit();
+            return response()->json(['user' => new UserResource(auth()->user())], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([], 401);
+        }
     }
 
     # @User
-    public function getMyPoints(Request $request){
+    public function getMyPoints(Request $request)
+    {
 
-        $points=Point::where('user_id',auth()->id())->when(!is_null($request->date),function ($query){
-            $query->where('created_at','like','%'.\request()->get('date').'%');
+        $points = Point::where('user_id', auth()->id())->when(!is_null($request->date), function ($query) {
+            $query->where('created_at', 'like', '%' . \request()->get('date') . '%');
         })->latest()->get();
 
-        return response()->json(['points'=>PointResource::collection($points)],200);
+        return response()->json(['points' => PointResource::collection($points)], 200);
 
     }
 

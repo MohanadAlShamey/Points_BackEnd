@@ -21,17 +21,17 @@ class PointResource extends JsonResource
             'noID'=>$this->noID,
             'type'=>$this->type==1?'إضافة رصيد':'سحب رصيد',
             'qnt'=>$this->qnt,
-            'note'=>$this->note,
+            'note'=>$this->note??'',
             'status'=>$this->status==1?true:false,
-            'userName'=>$this->point->user->name
+            'userName'=>$this->getUserNameByType()
         ];
     }
 
-   /* public function getUserNameByType(){
-        if($this->type==-1){
-            return $this->point->user->name,
-        }elseif($this->type==1){
-            return
+   public function getUserNameByType(){
+        if($this->point!=null){
+            return $this->point->user->name;
+        }else{
+            return '';
         }
-    }*/
+    }
 }

@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    protected $appends=['balance','totalBalance','mony','totalMony'];
+    protected $appends=['balance','totalBalance','mony','totalMony','role'];
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -94,6 +94,14 @@ class User extends Authenticatable
         $add=$this->balances()->where(['type'=>1])->sum('qnt');
         $min=$this->balances()->where(['type'=>-1])->sum('qnt');
         return $add-$min;
+    }
+
+    public function getRoleAttribute() {
+        $role =$this->roles()->first();
+        if($role!=null){
+            return $role->name;
+        }
+        return 'user';
     }
 
 
