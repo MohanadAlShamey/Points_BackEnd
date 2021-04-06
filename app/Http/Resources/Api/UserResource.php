@@ -28,6 +28,7 @@ class UserResource extends JsonResource
             'mony'=>$this->mony,
             'totalMony'=>$this->totalMony,
             'role'=>$this->role,
+            'deviceToken'=>$this->device_token
         ];
     }
 }

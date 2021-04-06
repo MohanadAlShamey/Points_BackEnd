@@ -2,21 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e9632795-2a86-4ad2-b79b-4e5e277a14ab" name="Default Changelist" comment="add BalanceMony">
-      <change afterPath="$PROJECT_DIR$/.htaccess" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/Admin/LockController.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Http/Middleware/IsAdmin.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Models/Lock.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_01_073804_create_locks_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/seeders/RoleSeeder.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/points.zip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Jobs/SendNotifyJob.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_06_063310_create_jobs_table.php" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/database/migrations/2021_04_06_063454_add_column_device_token_for_user_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Console/Kernel.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Console/Kernel.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Api/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/AuthController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Api/PointController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/PointController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Api/UserController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/UserController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Kernel.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Kernel.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Resources/Api/PointResource.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/Api/PointResource.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Resources/Api/UserResource.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/Api/UserResource.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/Point.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Point.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Models/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/User.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/seeders/DatabaseSeeder.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/seeders/DatabaseSeeder.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -196,7 +192,14 @@
       <workItem from="1617089137383" duration="2332000" />
       <workItem from="1617094086154" duration="8711000" />
       <workItem from="1617180419347" duration="10121000" />
-      <workItem from="1617262639419" duration="8273000" />
+      <workItem from="1617262639419" duration="8528000" />
+      <workItem from="1617281466785" duration="10000" />
+      <workItem from="1617435514064" duration="2474000" />
+      <workItem from="1617520064291" duration="7777000" />
+      <workItem from="1617601175205" duration="705000" />
+      <workItem from="1617619532202" duration="2000" />
+      <workItem from="1617643831875" duration="5362000" />
+      <workItem from="1617690326266" duration="4299000" />
     </task>
     <task id="LOCAL؜٠٠٠٠١" summary="add BalanceMony">
       <created>1617023231774</created>
@@ -204,7 +207,19 @@
       <option name="presentableId" value="LOCAL؜٠٠٠٠١" />
       <updated>1617023231774</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL؜٠٠٠٠٢" summary="BackEndMarket release Point">
+      <created>1617279224316</created>
+      <option name="number" value="LOCAL؜٠٠٠٠٢" />
+      <option name="presentableId" value="LOCAL؜٠٠٠٠٢" />
+      <updated>1617279224317</updated>
+    </task>
+    <task id="LOCAL؜٠٠٠٠٣" summary="BackEndMarket release Point">
+      <created>1617279230949</created>
+      <option name="number" value="LOCAL؜٠٠٠٠٣" />
+      <option name="presentableId" value="LOCAL؜٠٠٠٠٣" />
+      <updated>1617279230949</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -225,6 +240,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="add BalanceMony" />
-    <option name="LAST_COMMIT_MESSAGE" value="add BalanceMony" />
+    <MESSAGE value="BackEndMarket release Point" />
+    <option name="LAST_COMMIT_MESSAGE" value="BackEndMarket release Point" />
   </component>
 </project>

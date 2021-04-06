@@ -11,7 +11,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('changeAvatar', [\App\Http\Controllers\Api\AuthController::class, 'changeAvatar']);
     Route::post('getUserByQr', [\App\Http\Controllers\Api\AuthController::class, 'getUserByQr']);
     Route::post('getUserByIdNo', [\App\Http\Controllers\Api\AuthController::class, 'getUserByIdNo']);
-
+    Route::get('getMyProfile', [\App\Http\Controllers\Api\AuthController::class, 'getMyProfile']);
 
     Route::post('transfer', [\App\Http\Controllers\Api\PointController::class, 'transfer']);
     Route::post('point/{point}/active', [\App\Http\Controllers\Api\PointController::class, 'activePoint']);
@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('balance/{balance}/active', [\App\Http\Controllers\Api\BalanceController::class, 'activeBalance']);
     Route::post('balance/{balance}/cancel', [\App\Http\Controllers\Api\BalanceController::class, 'cancelBalance']);
     Route::get('getMyBalance', [\App\Http\Controllers\Api\BalanceController::class, 'getMyBalances']);
+
 
 });
 

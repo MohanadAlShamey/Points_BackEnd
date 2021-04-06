@@ -20,7 +20,6 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-
         $validate = Validator::make($request->all(), [
             'username' => 'required',
             'password' => 'required'
@@ -36,6 +35,9 @@ class AuthController extends Controller
             $query->where('email', $request->username);
             $query->orWhere('username', $request->username);
         })->first();
+        $user->update([
+            'device_token'=>$request->deviceToken,
+        ]);
         return response()->json(['user' => new UserResource($user), 'balance' => $user->balance, 'access_token' => $user->createToken('user_token')->plainTextToken], 200);
     }
 
@@ -69,12 +71,14 @@ class AuthController extends Controller
             'username' => $request->username,
             'password' => bcrypt($request->password),
             'email' => $request->email,
+            'phone'=>$request->phone,
             'qr' => $name,
             'code' => $code,
             'idNo' =>$this->generateCode(),
+            'device_token'=>$request->deviceToken,
         ]);
 
-        return response()->json(['user' => new UserResource($user), 'balance' => $user->balance], 200);
+        return response()->json(['user' => new UserResource($user), 'balance' => $user->balance,'access_token' => $user->createToken('user_token')->plainTextToken], 200);
     }
 
 
@@ -203,5 +207,9 @@ class AuthController extends Controller
             return response()->json([], 404);
         }
         return response()->json(['user' => new UserResource($user)], 200);
+    }
+
+    public function getMyProfile() {
+        return response()->json(['user'=>new UserResource(auth()->user())],200);
     }
 }

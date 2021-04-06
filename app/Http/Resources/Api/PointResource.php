@@ -17,13 +17,14 @@ class PointResource extends JsonResource
         return [
             'id'=>$this->id,
             'user'=>$this->user->name,
-            'amount'=>$this->amount,
-            'noID'=>$this->noID,
+            'amount'=>$this->amount??0,
+            'noID'=>$this->noID??'',
             'type'=>$this->type==1?'إضافة رصيد':'سحب رصيد',
             'qnt'=>$this->qnt,
             'note'=>$this->note??'',
             'status'=>$this->status==1?true:false,
-            'userName'=>$this->getUserNameByType()
+            'userName'=>$this->getUserNameByType(),
+            'createdAt'=>$this->created_at,
         ];
     }
 

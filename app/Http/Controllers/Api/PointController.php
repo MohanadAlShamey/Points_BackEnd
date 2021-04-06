@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\PointResource;
 use App\Http\Resources\Api\UserResource;
+use App\Jobs\SendNotifyJob;
 use App\Models\Point;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -142,7 +143,10 @@ class PointController extends Controller
             ]);
 
             DB::commit();
-
+            $tokens=User::where('id',$user->id)->whereNotNull('device_token')->pluck('device_token')->all();
+            $body='تم تحويل '.$request->qnt .' نقطة إلى رصيدك من '.auth()->user()->name;
+            $job=new SendNotifyJob($tokens, 'تنبيه', $body);
+            $this->dispatch($job);
             return response()->json(['user' => new UserResource(auth()->user())], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -159,6 +163,11 @@ class PointController extends Controller
             $point->update([
                 'status' => 1
             ]);
+            $tokens=User::where('id',$point->point->user->id)->whereNotNull('device_token')->pluck('device_token')->all();
+            $title='أرسل '.auth()->user()->name;
+            $body='شكرا لك على النقاط';
+            $job=new SendNotifyJob($tokens, $title, $body);
+            $this->dispatch($job);
             return response()->json(['user' => new UserResource(auth()->user())], 200);
         }
         return response()->json([], 422);
@@ -171,6 +180,11 @@ class PointController extends Controller
             return response()->json([], 422);
 
         }
+        $tokens=User::where('id',$point->point->user->id)->whereNotNull('device_token')->pluck('device_token')->all();
+        $title='أرسل '.auth()->user()->name;
+        $body='تم رفض النقاط شكرا لك';
+        $job=new SendNotifyJob($tokens, $title, $body);
+        $this->dispatch($job);
         DB::beginTransaction();
         try {
             $point->point()->delete();
@@ -187,8 +201,8 @@ class PointController extends Controller
     public function getMyPoints(Request $request)
     {
 
-        $points = Point::where('user_id', auth()->id())->when(!is_null($request->date), function ($query) {
-            $query->where('created_at', 'like', '%' . \request()->get('date') . '%');
+        $points = Point::where('user_id', auth()->id())->when(!is_null($request->search), function ($query) {
+            $query->where('noID', 'like', '%' . \request()->get('search') . '%');
         })->latest()->get();
 
         return response()->json(['points' => PointResource::collection($points)], 200);
